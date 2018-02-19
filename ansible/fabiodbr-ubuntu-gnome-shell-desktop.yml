@@ -1,0 +1,202 @@
+---
+- hosts: localhost
+
+  become: true
+
+  vars:
+    usuario: fabio
+
+  tasks:
+
+  - name: Upgrade packages
+    apt:
+      upgrade: yes
+      dpkg_options: 'force-confold,force-confdef'
+      autoremove: yes
+      update_cache: yes
+
+  - name: Install gnome-session
+    apt:
+      name: gnome-session
+      state: latest
+
+  - name: Install powerline fonts
+    apt:
+      name: fonts-powerline
+      state: latest
+  - name: Fantasque-sans-mont
+    apt:
+      name: fonts-fantasque-sans
+      state: latest
+
+  - name: Install python-pip
+    apt:
+      name: python-pip
+      state: latest
+
+  - name: Install vim
+    apt:
+      name: vim
+      state: latest
+
+  - name: Install git
+    apt:
+      name: git
+      state: latest
+
+  - name: Install gnome-tweak-tool
+    apt:
+      name: gnome-tweak-tool
+      state: latest
+
+  - name: Install chrome-gnome-shell for extensions
+    apt:
+      name: chrome-gnome-shell
+      state: latest
+
+  - name: Install python-gpgme for dropbox
+    apt:
+      name: python-gpgme
+      state: latest
+
+  - name: Sudoers
+    lineinfile:
+       path: /etc/sudoers
+       line: "{{ usuario }} ALL=(ALL) NOPASSWD:ALL"
+       insertafter: EOF
+       validate: '/usr/sbin/visudo -cf %s'
+
+  - name: Install Terminator PPA
+    apt_repository:
+      repo: 'ppa:gnome-terminator/nightly-gtk3'
+      state: present
+
+  - name: Install Terminator
+    apt:
+      name: terminator
+      state: latest
+
+  - name: Clone Terminator Nord theme
+    git:
+      repo: https://github.com/arcticicestudio/nord-terminator.git
+      dest: /tmp/nord
+  - name: Install Terminator Nord theme
+    file:
+      path: '/home/{{ usuario }}/.config/terminator'
+      state: directory
+      owner: '{{ usuario }}'
+      group: '{{ usuario }}'
+      mode: 0755
+  - copy:
+      src: '/tmp/nord/src/config'
+      dest: '/home/{{ usuario }}/.config/terminator/config'
+      owner: "{{ usuario }}"
+      group: "{{ usuario }}"
+      mode: 0644
+  - name: Substitui perfil 'nord' por 'default'
+    replace:
+      dest: '/home/{{ usuario }}/.config/terminator/config'
+      regexp: 'nord'
+      replace: 'default'
+  - name: Configura escuridao da transparencia
+    lineinfile:
+      dest: '/home/{{ usuario }}/.config/terminator/config'
+      regexp: '^background_color'
+      insertafter: '^background_color'
+      line: "    {{ item.property }} = {{ item.value }}"
+    with_items: 
+      - { property: 'background_darkness', value: '0.9' }
+      - { property: 'background_type', value: 'transparent' } 
+      - { property: 'scrollback_lines', value: '50000' } 
+      - { property: 'font', value: 'Liberation Mono 9' } 
+      - { property: 'use_system_font', value: 'False' } 
+  - name: powerline-shell pip
+    pip:
+      name: powerline-shell
+
+  - name: Configura powerline-shell
+    blockinfile:
+      path: /etc/bash.bashrc
+      insertafter: EOF
+      content: |
+        function _update_ps1() {
+          PS1=$(powerline-shell $?)
+        }
+        if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
+           PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+        fi
+
+  - name: Install noobslab themes ppa
+    apt_repository:
+      repo: 'ppa:noobslab/themes'
+      state: present
+
+  - name: Install noobslab icons ppa
+    apt_repository:
+      repo: 'ppa:noobslab/icons'
+      state: present
+
+  - name: Install arc theme
+    apt:
+      name: arc-theme
+
+  - name: Install arc icons
+    apt:
+      name: arc-icons
+
+  - name: Gnome shell extensions
+    apt:
+      name: gnome-shell-extensions
+      state: latest
+
+  - name: Gnome-shell-extension hide topbar
+    become_user: "{{ usuario }}"
+    git:
+      repo: https://github.com/mlutfy/hidetopbar.git
+      version: master
+      update: yes
+      force: yes
+      dest: '/home/{{ usuario }}/.local/share/gnome-shell/extensions/hidetopbar@mathieu.bidon.ca'
+ 
+  - name: Activate shell extension hidetopbar
+    become_user: "{{ usuario }}"
+    shell: |
+      cd "/home/{{ usuario }}/.local/share/gnome-shell/extensions/hidetopbar@mathieu.bidon.ca"
+      make schemas
+      gnome-shell-extension-tool -e hidetopbar@mathieu.bidon.ca
+      exit 0
+
+  - name: Git gnome-shell-extension-freon
+    become_user: "{{ usuario }}"
+    git:
+      repo: https://github.com/UshakovVasilii/gnome-shell-extension-freon.git
+      version: master
+      update: yes
+      force: yes
+      dest: '/tmp/freon'
+  - name: Copy Freon
+    become_user: "{{ usuario }}"
+    copy:
+      src: "/tmp/freon/freon@UshakovVasilii_Github.yahoo.com"
+      dest: "/home/{{ usuario }}/.local/share/gnome-shell/extensions"
+      owner: "{{ usuario }}"
+      force: yes
+
+  - name: Git easyscreencast
+    become_user: "{{ usuario }}"
+    git:
+      repo: https://github.com/EasyScreenCast/EasyScreenCast.git
+      version: master
+      update: yes
+      force: yes
+      dest: '/tmp/easyscreencast'
+  - name: Install & enable easyscreencast
+    become_user: "{{ usuario }}"
+    shell: |
+      cd /tmp/easyscreencast
+      make
+      make install
+      gnome-shell-extension-tool -e EasyScreenCast@iacopodeenosee.gmail.com
+      exit 0
+  
+
