@@ -23,6 +23,7 @@
       - ppa:gencfsm
       - ppa:videolan/stable-daily
       - ppa:otto-kesselgulasch/gimp-edge
+#      - ppa:noobslab/macbuntu
     ignore_errors: yes
 
   - name: Upgrade packages
@@ -59,6 +60,10 @@
       - vlc
       - ubuntu-make
       - gimp
+      - network-manager-openvpn-gnome
+#      - macbuntu-os-ithemes-v10
+#      - macbuntu-os-icons-v10
+      - deluge
 
   - name: powerline-shell pip
     state: latest
