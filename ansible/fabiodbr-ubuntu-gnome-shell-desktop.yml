@@ -13,6 +13,21 @@
       url: https://download.docker.com/linux/ubuntu/gpg
       state: present
 
+  - name: Google Chrome apt-key
+    apt_key:
+      url: https://dl-ssl.google.com/linux/linux_signing_key.pub
+      state: present
+
+  - name: Cloud Foundry CLI
+    apt_key:
+      url: https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key
+      state: present 
+
+  - name: Google Chrome repository
+    lineinfile:
+       path: /etc/apt/sources.list.d/google.list
+       line: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+
   - name: Add PPAs
     apt_repository:
       repo: '{{ item }}'
@@ -23,7 +38,8 @@
       - ppa:gencfsm
       - ppa:videolan/stable-daily
       - ppa:otto-kesselgulasch/gimp-edge
-#      - ppa:noobslab/macbuntu
+#      - ppa:noobslaib/macbuntu
+      - ppa:graphics-drivers/ppa
     ignore_errors: yes
 
   - name: Upgrade packages
@@ -64,6 +80,7 @@
 #      - macbuntu-os-ithemes-v10
 #      - macbuntu-os-icons-v10
       - deluge
+      - cf-cli
 
   - name: powerline-shell pip
     state: latest
