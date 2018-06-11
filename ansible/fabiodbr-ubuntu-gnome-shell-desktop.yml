@@ -46,8 +46,6 @@
       - ppa:gnome-terminator/nightly-gtk3
       - ppa:noobslab/themes 
       - ppa:videolan/stable-daily
-      - ppa:noobslab/macbuntu
-
 
   - name: Upgrade packages
     apt:
@@ -69,6 +67,7 @@
     with_items:
       - flat-remix
       - flat-remix-gnome
+      - flat-remix-gtk
       - fonts-powerline
       - fonts-fantasque-sans
       - python-pip
@@ -76,8 +75,6 @@
       - git
       - gnome-tweak-tool
       - chrome-gnome-shell
-#      - arc-theme
-#      - arc-icons
       - gnome-shell-extensions
       - lm-sensors
       - gnome-shell-extension-weather
@@ -91,8 +88,6 @@
       - ubuntu-make
       - gimp
       - network-manager-openvpn-gnome
-#      - macbuntu-os-ithemes-v10
-#      - macbuntu-os-icons-v10
       - deluge
 
   - name: powerline-shell pip
