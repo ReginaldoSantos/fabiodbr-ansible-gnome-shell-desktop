@@ -134,6 +134,12 @@
       - { property: 'font', value: 'Liberation Mono 8' } 
       - { property: 'use_system_font', value: 'False' } 
 
+
+  - Name: Habilita hot corner
+    dconf:
+      key: "/org/gnome/shell/enable-hot-corners"
+      value: "true"
+
   - name: Configura powerline-shell
     blockinfile:
       path: /etc/bash.bashrc
