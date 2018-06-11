@@ -18,29 +18,36 @@
       url: https://dl-ssl.google.com/linux/linux_signing_key.pub
       state: present
 
-  - name: Cloud Foundry CLI
-    apt_key:
-      url: https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key
-      state: present 
-
   - name: Google Chrome repository
     lineinfile:
        path: /etc/apt/sources.list.d/google.list
        line: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+       create: yes
 
   - name: Add PPAs
     apt_repository:
       repo: '{{ item }}'
+    validate_certs: no
     with_items:
-      - ppa:gnome-terminator/nightly-gtk3
-      - ppa:noobslab/themes
       - ppa:noobslab/icons
       - ppa:gencfsm
-      - ppa:videolan/stable-daily
       - ppa:otto-kesselgulasch/gimp-edge
-#      - ppa:noobslaib/macbuntu
       - ppa:graphics-drivers/ppa
+      - ppa:daniruiz/flat-remix
+
     ignore_errors: yes
+
+  - name: Trusty PPAs
+    apt_repository:
+      repo: '{{ item }}'
+      codename: trusty
+    validate_certs: no
+    with_items:
+      - ppa:gnome-terminator/nightly-gtk3
+      - ppa:noobslab/themes 
+      - ppa:videolan/stable-daily
+      - ppa:noobslab/macbuntu
+
 
   - name: Upgrade packages
     apt:
@@ -50,11 +57,18 @@
       update_cache: yes
     ignore_errors: yes
 
+  - name: Remove unity look
+    apt:
+      state: absent
+      name: gnome-shell-extension-ubuntu-dock
+
   - name: Install Packages
     apt:
       name: "{{ item }}"
       state: latest
     with_items:
+      - flat-remix
+      - flat-remix-gnome
       - fonts-powerline
       - fonts-fantasque-sans
       - python-pip
@@ -62,8 +76,8 @@
       - git
       - gnome-tweak-tool
       - chrome-gnome-shell
-      - arc-theme
-      - arc-icons
+#      - arc-theme
+#      - arc-icons
       - gnome-shell-extensions
       - lm-sensors
       - gnome-shell-extension-weather
@@ -80,7 +94,6 @@
 #      - macbuntu-os-ithemes-v10
 #      - macbuntu-os-icons-v10
       - deluge
-      - cf-cli
 
   - name: powerline-shell pip
     state: latest
@@ -142,10 +155,12 @@
     become_user: "{{ usuario }}"
     git:
       repo: https://github.com/UshakovVasilii/gnome-shell-extension-freon.git
+      depth: 1
       version: master
       update: yes
       force: yes
       dest: '/tmp/freon'
+
   - name: Copy Freon
     become_user: "{{ usuario }}"
     copy:
@@ -158,10 +173,12 @@
     become_user: "{{ usuario }}"
     git:
       repo: https://github.com/EasyScreenCast/EasyScreenCast.git
+      depth: 1
       version: master
       update: yes
       force: yes
       dest: '/tmp/easyscreencast'
+
   - name: Install & enable easyscreencast
     become_user: "{{ usuario }}"
     shell: |
