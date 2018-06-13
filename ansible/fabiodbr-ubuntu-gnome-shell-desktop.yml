@@ -8,20 +8,25 @@
 
   tasks:
 
-  - name: Docker apt-key
+  - name: Apt-keys
     apt_key: 
       url: https://download.docker.com/linux/ubuntu/gpg
       state: present
-
-  - name: Google Chrome apt-key
-    apt_key:
-      url: https://dl-ssl.google.com/linux/linux_signing_key.pub
-      state: present
+    with_items:
+      - "https://download.docker.com/linux/ubuntu/gpg"
+      - "https://dl-ssl.google.com/linux/linux_signing_key.pub"
+      - "https://repo.skype.com/data/SKYPE-GPG-KEY"
 
   - name: Google Chrome repository
     lineinfile:
        path: /etc/apt/sources.list.d/google.list
        line: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+       create: yes
+
+  - name: Skype repository
+    lineinfile:
+       path: /etc/apt/sources.list.d/sype-unstable.list
+       line: "deb [arch=amd64] https://repo.skype.com/deb unstable main"
        create: yes
 
   - name: Add PPAs
@@ -89,6 +94,7 @@
       - gimp
       - network-manager-openvpn-gnome
       - deluge
+      - skypeforlinux
 
   - name: powerline-shell pip
     state: latest
@@ -129,16 +135,16 @@
       line: "    {{ item.property }} = {{ item.value }}"
     with_items: 
       - { property: 'background_darkness', value: '0.9' }
-      - { property: 'background_type', value: 'transparent' } 
-      - { property: 'scrollback_lines', value: '50000' } 
-      - { property: 'font', value: 'Liberation Mono 8' } 
-      - { property: 'use_system_font', value: 'False' } 
+      - { property: 'background_type', value: 'transparent' }
+      - { property: 'scrollback_lines', value: '50000' }
+      - { property: 'font', value: 'Liberation Mono 8' }
+      - { property: 'use_system_font', value: 'False' }
 
-
-  - Name: Habilita hot corner
+  - name: Habilita hot corner
     dconf:
       key: "/org/gnome/shell/enable-hot-corners"
-      value: "true"
+      value:  "true"
+    ignore_errors: yes 
 
   - name: Configura powerline-shell
     blockinfile:
@@ -188,5 +194,5 @@
       make install
       gnome-shell-extension-tool -e EasyScreenCast@iacopodeenosee.gmail.com
       exit 0
-  
+
 
