@@ -10,7 +10,7 @@
 
   - name: Apt-keys
     apt_key: 
-      url: https://download.docker.com/linux/ubuntu/gpg
+      url: "{{ item }}" 
       state: present
     with_items:
       - "https://download.docker.com/linux/ubuntu/gpg"
@@ -25,7 +25,7 @@
 
   - name: Skype repository
     lineinfile:
-       path: /etc/apt/sources.list.d/sype-unstable.list
+       path: /etc/apt/sources.list.d/skype-unstable.list
        line: "deb [arch=amd64] https://repo.skype.com/deb unstable main"
        create: yes
 
@@ -51,6 +51,7 @@
       - ppa:gnome-terminator/nightly-gtk3
       - ppa:noobslab/themes 
       - ppa:videolan/stable-daily
+    ignore_errors: yes
 
   - name: Upgrade packages
     apt:
@@ -69,6 +70,7 @@
     apt:
       name: "{{ item }}"
       state: latest
+      dpkg_options: 'force-confdef,force-confold'
     with_items:
       - flat-remix
       - flat-remix-gnome
