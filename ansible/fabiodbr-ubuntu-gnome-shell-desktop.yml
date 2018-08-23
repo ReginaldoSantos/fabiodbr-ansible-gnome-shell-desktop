@@ -98,6 +98,13 @@
       - network-manager-openvpn-gnome
       - deluge
       - skypeforlinux
+      - htop
+
+  - name: Install Keybase
+    apt:
+      deb: "{{ item }}"
+    with_items:
+      - https://prerelease.keybase.io/keybase_amd64.deb
 
   - name: powerline-shell pip
     state: latest
