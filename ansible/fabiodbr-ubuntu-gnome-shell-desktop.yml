@@ -17,12 +17,6 @@
       - "https://dl-ssl.google.com/linux/linux_signing_key.pub"
       - "https://repo.skype.com/data/SKYPE-GPG-KEY"
 
-  - name: Google Chrome repository
-    lineinfile:
-       path: /etc/apt/sources.list.d/google.list
-       line: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
-       create: yes
-
   - name: Skype repository
     lineinfile:
        path: /etc/apt/sources.list.d/skype-unstable.list
