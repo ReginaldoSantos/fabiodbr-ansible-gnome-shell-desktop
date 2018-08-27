@@ -29,6 +29,11 @@
        line: "deb [arch=amd64] https://repo.skype.com/deb unstable main"
        create: yes
 
+  - name: Docker CE repository
+    apt_repository:
+      repo:  "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+      state: present
+
   - name: Add PPAs
     apt_repository:
       repo: '{{ item }}'
@@ -99,6 +104,7 @@
       - deluge
       - skypeforlinux
       - htop
+      - docker-ce
 
   - name: Install Keybase
     apt:
@@ -145,12 +151,13 @@
       line: "    {{ item.property }} = {{ item.value }}"
     with_items: 
       - { property: 'background_darkness', value: '0.9' }
-      - { property: 'background_type', value: 'transparent' }
-      - { property: 'scrollback_lines', value: '50000' }
-      - { property: 'font', value: 'Liberation Mono 8' }
-      - { property: 'use_system_font', value: 'False' }
+      - { property: 'background_type',     value: 'transparent' }
+      - { property: 'scrollback_lines',    value: '50000' }
+      - { property: 'font',                value: 'Liberation Mono 8' }
+      - { property: 'use_system_font',     value: 'False' }
 
   - name: Habilita hot corner
+    become_user: "{{ usuario }}" 
     dconf:
       key: "/org/gnome/shell/enable-hot-corners"
       value:  "true"
