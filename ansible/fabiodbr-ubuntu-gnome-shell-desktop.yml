@@ -118,6 +118,12 @@
        insertafter: EOF
        validate: '/usr/sbin/visudo -cf %s'
 
+  - name: Add {{ usuario }} to docker group
+    user:
+      name: "{{ usuario }}"
+      groups: "docker"
+      append: yes
+
   - name: Terminator Nord theme
     git:
       repo: https://github.com/arcticicestudio/nord-terminator.git
